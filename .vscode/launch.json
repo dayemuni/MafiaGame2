@@ -10,6 +10,13 @@
         },
         {
             "type": "java",
+            "name": "Server",
+            "request": "launch",
+            "mainClass": "server.Server",
+            "projectName": "MafiaGame"
+        },
+        {
+            "type": "java",
             "name": "Run JavaFX Main",
             "request": "launch",
             "mainClass": "client.ui.Main",

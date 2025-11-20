@@ -1,29 +1,27 @@
 package client.ui;
 
 import client.network.Client;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 public class LobbyController {
 
-    @FXML
-    private TextField nicknameField;
-    @FXML
-    private Button createRoomButton;
-    @FXML
-    private Button joinRoomButton;
-    @FXML
-    private ListView<String> roomList;
-    @FXML
-    private Label statusLabel;
+    @FXML private TextField nicknameField;
+    @FXML private ListView<String> roomList;
+    @FXML private Label statusLabel;
+    @FXML private Button createRoomButton;
+    @FXML private Button joinRoomButton;
 
     private Client client = new Client();
+    private String nickname;
 
     @FXML
     public void initialize() {
+
         boolean connected = client.connect("localhost", 6000, this::onMessageReceived);
 
         if (!connected) {
@@ -31,32 +29,56 @@ public class LobbyController {
             return;
         }
 
-        statusLabel.setText("서버와 연결됨!");
+        statusLabel.setText("서버 연결됨!");
 
-        // 처음 실행 시 방 목록 요청
         client.requestRoomList();
     }
 
-    /**
-     * 🔵 서버에서 온 메시지 처리
-     */
+    /** 🔵 서버에서 오는 메시지 처리 (로비 단계) */
     private void onMessageReceived(String msg) {
         System.out.println("서버 → " + msg);
 
-        if (msg.startsWith("ROOM_LIST")) {
+        if (msg.startsWith("ROOM_LIST|")) {
             updateRoomList(msg);
+        }
+
+        // JOIN_OK|방ID|방이름
+        if (msg.startsWith("JOIN_OK|")) {
+            String[] parts = msg.split("\\|", 3);
+            if (parts.length < 3) return;
+
+            String roomId = parts[1];
+            String roomName = parts[2];
+
+            Platform.runLater(() -> {
+                try {
+                    // GameRoomController에 데이터 전달
+                    GameRoomController.init(client, roomId, roomName, nickname);
+
+                    // GameRoom.fxml 로드
+                    FXMLLoader loader = new FXMLLoader(
+                            getClass().getResource("/client/ui/GameRoom.fxml")
+                    );
+
+                    Scene scene = new Scene(loader.load());
+                    Stage stage = (Stage) nicknameField.getScene().getWindow();
+
+                    stage.setScene(scene);
+                    stage.show();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
-    /**
-     * 🔵 방 목록 업데이트
-     */
+    /** 🔵 방 목록 업데이트 */
     private void updateRoomList(String msg) {
-        // 예: ROOM_LIST|#1 방1 (1/10),#2 방2 (5/10)
         String data = msg.substring("ROOM_LIST|".length());
         String[] rooms = data.split(",");
 
-        javafx.application.Platform.runLater(() -> {
+        Platform.runLater(() -> {
             roomList.getItems().clear();
             for (String r : rooms) {
                 if (!r.trim().isEmpty()) {
@@ -66,44 +88,42 @@ public class LobbyController {
         });
     }
 
-    /**
-     * 🔵 방 생성 버튼
-     */
+    /** 🔵 방 생성 버튼 */
     @FXML
     private void handleCreateRoom() {
-        String nickname = nicknameField.getText().trim();
+        nickname = nicknameField.getText().trim();
 
         if (nickname.isEmpty()) {
-            statusLabel.setText("닉네임을 먼저 입력하세요.");
+            statusLabel.setText("닉네임 입력!");
             return;
         }
 
-        String roomName = nickname + "의 방";
-        client.createRoom(roomName);
-
+        client.createRoom(nickname + "의 방");
         statusLabel.setText("방 생성 요청 보냄!");
 
         client.requestRoomList();
     }
 
-    /**
-     * 🔵 방 참가 버튼
-     */
+    /** 🔵 방 참가 버튼 */
     @FXML
     private void handleJoinRoom() {
-        String nickname = nicknameField.getText().trim();
-        String selectedRoom = roomList.getSelectionModel().getSelectedItem();
+        nickname = nicknameField.getText().trim();
 
         if (nickname.isEmpty()) {
-            statusLabel.setText("닉네임을 먼저 입력해주세요.");
+            statusLabel.setText("닉네임 입력!");
             return;
         }
 
-        if (selectedRoom == null) {
-            statusLabel.setText("참가할 방을 선택해주세요.");
+        String selected = roomList.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            statusLabel.setText("방 선택!");
             return;
         }
 
-        statusLabel.setText("🛠 JOIN_ROOM은 다음 단계에서 구현할게!");
+        // "#1 ㅇㅇ의 방 (1/10)" → roomId = "1"
+        String cleaned = selected.replace(",", "");
+        String roomId = cleaned.split(" ")[0].replace("#", "").trim();
+
+        client.joinRoom(nickname, roomId);
     }
 }
