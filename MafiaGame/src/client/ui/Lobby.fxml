@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" 
+            fx:controller="client.ui.LobbyController"
+            style="-fx-background-color: #111111;">
+
+    <!-- 상단 타이틀 -->
+    <top>
+        <HBox alignment="CENTER">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="MAFIA LOBBY"
+                   style="-fx-text-fill: #f5f5f5; -fx-font-size: 26px; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <!-- 중앙 메인 인터페이스 -->
+    <center>
+        <VBox spacing="25" alignment="TOP_CENTER">
+            <padding>
+                <Insets top="20" right="40" bottom="20" left="40"/>
+            </padding>
+
+
+            <!-- 닉네임 입력 -->
+            <VBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Nickname"
+                       style="-fx-text-fill: #cccccc; -fx-font-size: 14px;"/>
+                <TextField fx:id="nicknameField"
+                           promptText="Enter your nickname"
+                           style="-fx-background-color: #222222; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #777777;"/>
+            </VBox>
+
+            <!-- 방 이름 입력 + 생성 버튼 -->
+            <VBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Create Room"
+                       style="-fx-text-fill: #cccccc; -fx-font-size: 14px;"/>
+
+                <HBox spacing="10">
+                    <TextField fx:id="roomNameField"
+                               promptText="Enter room name"
+                               style="-fx-background-color: #222222; -fx-text-fill: white; -fx-prompt-text-fill: #777777;"/>
+
+                    <Button text="Create"
+                            onAction="#handleCreateRoom"
+                            style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 14;"/>
+                </HBox>
+            </VBox>
+
+
+            <!-- 방 목록 -->
+            <VBox alignment="CENTER" spacing="8">
+                <Label text="Available Rooms"
+                       style="-fx-text-fill: #bbbbbb; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+
+                <ListView fx:id="roomList"
+                          prefHeight="240"
+                          style="-fx-background-color: #1a1a1a; -fx-control-inner-background: #1a1a1a; -fx-text-fill: #f5f5f5;"/>
+            </VBox>
+
+            <!-- 방 입장 버튼 -->
+            <Button text="Join Selected Room"
+                    onAction="#handleJoinRoom"
+                    style="-fx-background-color: #444444; -fx-text-fill: #f5f5f5; -fx-font-weight: bold; -fx-padding: 8 18;"/>
+
+            <!-- 상태 표시 -->
+            <Label fx:id="statusLabel"
+                   text=""
+                   style="-fx-text-fill: #e67e22; -fx-font-size: 12px;"/>
+        </VBox>
+    </center>
+
+</BorderPane>
+

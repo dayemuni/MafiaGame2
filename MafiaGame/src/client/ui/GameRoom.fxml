@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- filepath: /Users/daye/MafiaGame/src/client/ui/GameRoom.fxml -->
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.ui.GameRoomController">
+
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <children>
+                <Label fx:id="roomTitle"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Label fx:id="roleLabel"
+                       text=""
+                       style="-fx-font-size: 16px; -fx-text-fill: #27ae60; -fx-font-weight: bold;"/>
+                <Label fx:id="nickLabel"
+                       text=""
+                       style="-fx-font-size: 14px; -fx-text-fill: #2980b9; -fx-font-weight: bold;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Button fx:id="startButton"
+                        text="게임 시작"
+                        onAction="#handleStartGame"
+                        style="-fx-background-color: #27ae60; -fx-text-fill:white; -fx-font-size:14px;"/>
+            </children>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <children>
+                <Label text="👥 플레이어 목록"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                <ListView fx:id="playerList"
+                          prefWidth="300"
+                          prefHeight="250"/>
+
+                <Label fx:id="timerLabel"
+                       text="대기 중..."
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"
+                       alignment="CENTER"/>
+            </children>
+        </VBox>
+    </center>
+
+    <bottom>
+        <VBox spacing="10">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+            <children>
+                <TextArea fx:id="chatArea"
+                          editable="false"
+                          wrapText="true"
+                          prefHeight="150"/>
+
+                <HBox spacing="10">
+                    <children>
+                        <TextField fx:id="inputField" promptText="채팅 입력"/>
+                        <Button text="Send" fx:id="sendButton"/>
+                    </children>
+                </HBox>
+            </children>
+
+        </VBox>
+    </bottom>
+
+</BorderPane>
+
